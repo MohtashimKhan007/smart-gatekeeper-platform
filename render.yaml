@@ -1,0 +1,31 @@
+databases:
+  - name: gatekeeper-db
+    databaseName: gatekeeper_management
+    user: gatekeeper_user
+    plan: free
+
+services:
+  - type: web
+    name: smart-gatekeeper-platform
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8081
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: gatekeeper-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: gatekeeper-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: gatekeeper-db
+          property: password
+      - key: GATEKEEPER_KAFKA_SERVERS
+        value: localhost:9092
